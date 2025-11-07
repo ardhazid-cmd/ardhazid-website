@@ -34,3 +34,306 @@
 </body>
 </html>
 index.html
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ardha Zid — أرضها زيد</title>
+<meta name="description" content="أرضها زيد — منصة لعرض المنتجات الفلاحية التونسية. نتنفس فلاحًا ونوصل منتجات من القلب إلى بيتك."/>
+<style>
+  :root{
+    --olive:#556b2f;
+    --brown:#8b5a2b;
+    --beige:#f5f0e6;
+    --gold:#c9a94a;
+    --dark:#223022;
+    --muted:#6b6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family: "Segoe UI", Tahoma, "Cairo", sans-serif;background:var(--beige);color:var(--dark);-webkit-font-smoothing:antialiased}
+  header{background:linear-gradient(90deg, rgba(85,107,47,0.95), rgba(139,90,43,0.95));color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:52px;height:52px;border-radius:10px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+  .titles{line-height:1}
+  .site-name{font-weight:800;font-size:18px}
+  .site-sub{font-size:12px;opacity:0.95}
+  .lang-switch{display:flex;gap:8px}
+  .lang-btn{background:transparent;border:1px solid rgba(255,255,255,0.18);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-weight:600}
+  nav{background:var(--beige);padding:10px 14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+  nav a{color:var(--olive);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:700}
+  .banner{height:320px;background:#e9e4db;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .hero{max-width:1100px;margin:18px auto;padding:22px}
+  .hero-card{background:#fff;border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(34,48,34,0.06);display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .hero-text{flex:1 1 480px}
+  .hero-title{font-size:28px;color:var(--olive);margin:6px 0;font-weight:800}
+  .hero-sub{color:#556;opacity:0.95;margin:8px 0;font-size:15px}
+  .cta{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{background:var(--olive);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .secondary{background:transparent;border:2px solid var(--olive);color:var(--olive);padding:8px 12px;border-radius:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+  .card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.05)}
+  .section-title{color:var(--olive);font-weight:800;margin-bottom:8px;font-size:16px}
+  .product-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .product{background:linear-gradient(180deg,#fff,#fbfbf8);padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:8px;align-items:start}
+  .p-name{font-weight:800;color:var(--brown)}
+  .p-desc{color:var(--muted);font-size:13px}
+  .p-meta{margin-top:auto;display:flex;gap:8px;align-items:center;width:100%;justify-content:space-between}
+  .order-btn{background:var(--gold);border:none;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;color:#2b2b2b}
+  footer{background:#222;color:#fff;padding:18px;margin-top:22px}
+  .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .small{opacity:0.9}
+  /* responsive */
+  @media(max-width:720px){.hero{padding:12px}.hero-title{font-size:22px}}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">🌿</div>
+      <div class="titles">
+        <div class="site-name" id="siteTitle">Ardha Zid</div>
+        <div class="site-sub" id="siteSub">نتنفس فلاحًا</div>
+      </div>
+    </div>
+    <div class="lang-switch" aria-hidden>
+      <button class="lang-btn" onclick="setLang('ar')">العربية</button>
+      <button class="lang-btn" onclick="setLang('fr')">Français</button>
+      <button class="lang-btn" onclick="setLang('en')">English</button>
+    </div>
+  </header>
+
+  <nav id="navBar"></nav>
+
+  <main class="hero">
+    <div class="hero-card">
+      <div class="hero-text">
+        <h1 class="hero-title" id="heroTitle">أرضها زيد… نتنفس فلاحًا</h1>
+        <p class="hero-sub" id="heroSub">من قلب سيدي بوزيد نزرع جودة، ونوصل المنتجات من الفلاح إلى بيتك.</p>
+        <div class="cta">
+          <button class="btn" onclick="scrollToSection('products')">تسوّق الآن</button>
+          <button class="secondary" onclick="scrollToSection('about')">من نحن</button>
+        </div>
+      </div>
+      <div style="flex:1 1 260px">
+        <!-- صورة بانر مضمّنة مؤقتًا -->
+        <div style="width:100%;height:180px;border-radius:10px;background-image:linear-gradient(135deg, rgba(85,107,47,0.08), rgba(139,90,43,0.04));display:flex;align-items:center;justify-content:center;color:var(--olive);font-weight:700">
+          صورة مميزة من قلب الأرض
+        </div>
+      </div>
+    </div>
+
+    <!-- منتجات -->
+    <section id="products" style="margin-top:18px">
+      <div class="card">
+        <h3 class="section-title" id="productsTitle">منتجاتنا</h3>
+        <p style="color:var(--muted)">اختاري الفئة لرؤية المنتجات.</p>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="secondary" onclick="showCategory('bio')">المنتجات البيولوجية</button>
+          <button class="secondary" onclick="showCategory('normal')">منتجات عادية</button>
+          <button class="secondary" onclick="showCategory('plant')">منتجات نباتية</button>
+          <button class="secondary" onclick="showCategory('animal')">منتجات حيوانية</button>
+          <button class="secondary" onclick="showCategory('home')">منتجات بيتية</button>
+          <button class="secondary" onclick="showCategory('grains')">حبوب ومنتجات</button>
+        </div>
+
+        <div id="productGrid" class="product-list" style="margin-top:12px">
+          <!-- سيتم تعبئته بواسطة جافاسكربت -->
+        </div>
+      </div>
+    </section>
+
+    <!-- من نحن -->
+    <section id="about" style="margin-top:18px">
+      <div class="card">
+        <h3 class="section-title">من نحن</h3>
+        <p id="aboutText">
+          ولدت فكرة “أرضها زيد” من شغف بالأرض والفلاحة، ومن انتماء أصيل لولاية سيدي بوزيد، أرض الزيتون والخيرات.
+          أنا غفران براهمي، صاحبة المشروع، نشأت وسط عائلة تقدّر العمل الفلاحي وتراه روح الحياة.
+          “أرضها زيد” ليست مجرّد متجر إلكتروني، بل فضاء يربط الفلاح بالمستهلك ويُعيد الاعتبار لمنتجاتنا المحلية الأصيلة.
+        </p>
+      </div>
+    </section>
+
+    <!-- تواصل -->
+    <section id="contact" style="margin-top:18px">
+      <div class="card">
+        <h3 class="section-title">اتصل بنا</h3>
+        <p style="color:var(--muted)">لدعم الفلاحين أو تسجيل منتجاتك تواصلي معنا.</p>
+        <form onsubmit="sendMail(event)">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <input id="name" placeholder="الاسم" required style="flex:1;padding:10px;border-radius:8px;border:1px solid #e8e5df">
+            <input id="email" placeholder="البريد الإلكتروني" type="email" required style="flex:1;padding:10px;border-radius:8px;border:1px solid #e8e5df">
+          </div>
+          <textarea id="message" placeholder="رسالتك" required style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #e8e5df"></textarea>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+            <button class="btn" type="submit">أرسل الرسالة</button>
+          </div>
+        </form>
+        <p style="margin-top:8px;color:var(--muted)">أو راسلينا مباشرة على: <a href="mailto:ardhazid@gmail.com">ardhazid@gmail.com</a></p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>© 2025 Ardha Zid — جميع الحقوق محفوظة.</div>
+      <div class="small">Fièrement créé en Tunisie</div>
+    </div>
+  </footer>
+
+<script>
+/* محتويات (قوائم منتجات تجريبية — لا أسعار) */
+const products = {
+  bio: [
+    {name_ar:"زيتون عضوي", desc_ar:"محصول عضوي مُراقَب", slug:"olive-bio"},
+    {name_ar:"خضر عضوية", desc_ar:"خضر مباشرة من الحقل", slug:"veg-bio"}
+  ],
+  normal: [
+    {name_ar:"زيتون", desc_ar:"إنتاج محلي", slug:"olive"},
+    {name_ar:"بطاطا", desc_ar:"خضر طازجة", slug:"potato"}
+  ],
+  plant: [
+    {name_ar:"جزر", desc_ar:"جزر طازج من الحقل", slug:"carrot"}
+  ],
+  animal: [
+    {name_ar:"جبن بلدي", desc_ar:"منتج منزلي تقليدي", slug:"cheese"}
+  ],
+  home: [
+    {name_ar:"سمن بلدي", desc_ar:"سمن منزلي محلي", slug:"smen"}
+  ],
+  grains: [
+    {name_ar:"قمح", desc_ar:"حبوب مضمونة", slug:"wheat"}
+  ]
+};
+
+/* إنشاء العناصر المرئية للمنتجات */
+function showCategory(cat){
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  const list = products[cat] || [];
+  if(list.length === 0){
+    grid.innerHTML = '<div style="color:var(--muted)">لا توجد منتجات حالياً في هذه الفئة.</div>';
+    return;
+  }
+  list.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'product';
+    el.innerHTML = `<div style="width:100%;height:110px;border-radius:8px;background:#f3f2ee;display:flex;align-items:center;justify-content:center;color:var(--olive)">صورة</div>
+      <div style="padding-top:6px">
+        <div class="p-name">${p.name_ar}</div>
+        <div class="p-desc">${p.desc_ar}</div>
+      </div>
+      <div class="p-meta">
+        <div style="color:var(--muted);font-weight:700">—</div>
+        <button class="order-btn" onclick="orderProduct('${p.name_ar}')">اطلب الآن</button>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+/* زر طلب يفتح بريدك مع محتوى الرسالة */
+function orderProduct(name){
+  const mail = "ardhazid@gmail.com";
+  const subject = encodeURIComponent("طلب منتج: " + name);
+  const body = encodeURIComponent("مرحبًا، أرغب بطلب: " + name + "\n\nالاسم:\nالهاتف:\nالعنوان:\nالكمية:\n\nشكراً");
+  window.location.href = `mailto:${mail}?subject=${subject}&body=${body}`;
+}
+
+function sendMail(e){
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const message = document.getElementById('message').value.trim();
+  const mail = "ardhazid@gmail.com";
+  const subject = encodeURIComponent("رسالة من موقع أرضها زيد — " + name);
+  const body = encodeURIComponent("الاسم: " + name + "\nالبريد: " + email + "\n\n" + message);
+  window.location.href = `mailto:${mail}?subject=${subject}&body=${body}`;
+}
+
+/* اللغة: نصوص عربية/فرنسية/إنجليزية */
+const translations = {
+  ar:{
+    siteName:"Ardha Zid",
+    sub:"نتنفس فلاحًا",
+    heroTitle:"أرضها زيد… نتنفس فلاحًا",
+    heroSub:"من قلب سيدي بوزيد نزرع جودة، ونوصل المنتجات من الفلاح إلى بيتك.",
+    productsTitle:"منتجاتنا",
+    aboutTitle:"من نحن",
+    contactTitle:"اتصل بنا",
+    welcomeBtn:"تسوّق الآن",
+    aboutText:`ولدت فكرة “أرضها زيد” من شغف بالأرض والفلاحة، ومن انتماء أصيل لولاية سيدي بوزيد، أرض الزيتون والخيرات.
+    أنا غفران براهمي، صاحبة المشروع، نشأت وسط عائلة تقدّر العمل الفلاحي وتراه روح الحياة.
+    “أرضها زيد” ليست مجرّد متجر إلكتروني، بل فضاء يربط الفلاح بالمستهلك ويُعيد الاعتبار لمنتجاتنا المحلية الأصيلة.`
+  },
+  fr:{
+    siteName:"Ardha Zid",
+    sub:"Nous respirons la terre",
+    heroTitle:"Ardha Zid — Nous respirons la terre",
+    heroSub:"De Sidi Bouzid, nous partageons la qualité des produits du terroir avec le monde.",
+    productsTitle:"Nos Produits",
+    aboutTitle:"À propos",
+    contactTitle:"Contact",
+    welcomeBtn:"Acheter maintenant",
+    aboutText:"Ardha Zid est née d'une passion pour la terre et l'agriculture. Fondée par Ghofran, elle relie les agriculteurs aux consommateurs."
+  },
+  en:{
+    siteName:"Ardha Zid",
+    sub:"We breathe agriculture",
+    heroTitle:"Ardha Zid — We breathe agriculture",
+    heroSub:"From Sidi Bouzid we bring quality produce from the field to your home.",
+    productsTitle:"Our Products",
+    aboutTitle:"About",
+    contactTitle:"Contact",
+    welcomeBtn:"Shop now",
+    aboutText:"Ardha Zid was born from a passion for the land and farming. Founded by Ghofran, it connects farmers to consumers."
+  }
+};
+
+function setLang(lang){
+  // set dir and language
+  if(lang === 'ar'){ document.documentElement.lang='ar'; document.documentElement.dir='rtl'; }
+  else { document.documentElement.lang=lang; document.documentElement.dir='ltr'; }
+  const t = translations[lang];
+  document.getElementById('siteTitle').innerText = t.siteName;
+  document.getElementById('siteSub').innerText = t.sub;
+  document.getElementById('heroTitle').innerText = t.heroTitle;
+  document.getElementById('heroSub').innerText = t.heroSub;
+  document.getElementById('productsTitle').innerText = t.productsTitle;
+  document.getElementById('aboutText').innerText = t.aboutText;
+  // clear products view
+  document.getElementById('productGrid').innerHTML = '';
+}
+
+/* navigation */
+function buildNav(lang){
+  const nav = document.getElementById('navBar');
+  nav.innerHTML = '';
+  const items = {
+    ar:['الرئيسية','من نحن','منتجاتنا','اتصل بنا'],
+    fr:['Accueil','À propos','Produits','Contact'],
+    en:['Home','About','Products','Contact']
+  }[lang] || ['الرئيسية','من نحن','منتجاتنا','اتصل بنا'];
+  const ids = ['','about','products','contact'];
+  items.forEach((it, idx)=>{
+    const a = document.createElement('a');
+    a.href = '#'+ids[idx];
+    a.innerText = it;
+    nav.appendChild(a);
+  });
+}
+
+/* helper scroll */
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth'});
+}
+
+/* On load default */
+setLang('ar');
+buildNav('ar');
+</script>
+</body>
+    </html>
