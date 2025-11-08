@@ -13,46 +13,24 @@
       max-width: 600px;
       margin: auto;
     }
-    h1 {
-      color: #3d5a2b;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-    }
+    h1 { color: #3d5a2b; text-align: center; }
+    label { display: block; margin-top: 15px; font-weight: 600; }
     input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+      width: 100%; padding: 10px; margin-top: 5px;
+      border-radius: 8px; border: 1px solid #ccc; font-size: 16px;
     }
     button {
-      background: #3d5a2b;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
+      background: #3d5a2b; color: white; border: none;
+      cursor: pointer; transition: 0.3s;
     }
-    button:hover {
-      background: #527c3a;
-    }
-    .video-list {
-      margin-top: 25px;
-    }
+    button:hover { background: #527c3a; }
     .video-item {
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 10px;
+      background: white; padding: 10px; border-radius: 8px; margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>🎥 إدارة قسم من قلب الأرض</h1>
+  <h1>🎥 إدارة قسم "من قلب الأرض"</h1>
 
   <label>عنوان الفيديو:</label>
   <input type="text" id="videoTitle" placeholder="مثال: فلاح من القيروان يتحدث عن الزيت البيولوجي">
@@ -62,50 +40,73 @@
 
   <button onclick="addVideo()">➕ إضافة الفيديو</button>
 
-  <div class="video-list" id="videosList"></div>
+  <div id="videosList"></div>
 
   <script>
-    function loadVideos() {
-      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
+    const repo = "ardhazid-cmd/ardhazid-website";
+    const token = "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"; // ✅ ضعي هنا توكنك
+
+    async function loadVideos() {
+      const response = await fetch("videos.json?" + Date.now());
+      const videos = await response.json();
       const list = document.getElementById('videosList');
-      list.innerHTML = '';
-      videos.forEach((v, i) => {
-        list.innerHTML += `
-          <div class="video-item">
-            <b>${v.title}</b><br>
-            <small>${v.url}</small><br>
-            <button onclick="deleteVideo(${i})" style="background:#b33">🗑 حذف</button>
-          </div>
-        `;
+      list.innerHTML = videos.map((v, i) => `
+        <div class="video-item">
+          <b>${v.title}</b><br>
+          <small>${v.url}</small><br>
+          <button onclick="deleteVideo(${i})" style="background:#b33">🗑 حذف</button>
+        </div>
+      `).join("");
+    }
+
+    async function addVideo() {
+      const title = document.getElementById('videoTitle').value.trim();
+      const url = document.getElementById('videoUrl').value.trim();
+      if (!title || !url) return alert('املئي كل الحقول');
+
+      const response = await fetch("videos.json?" + Date.now());
+      const videos = await response.json();
+      videos.push({ title, url });
+
+      await updateVideos(videos);
+      alert("✅ تم حفظ الفيديو بنجاح!");
+      loadVideos();
+    }
+
+    async function deleteVideo(index) {
+      const response = await fetch("videos.json?" + Date.now());
+      const videos = await response.json();
+      videos.splice(index, 1);
+      await updateVideos(videos);
+      alert("🗑 تم حذف الفيديو!");
+      loadVideos();
+    }
+
+    async function updateVideos(videos) {
+      const content = btoa(JSON.stringify(videos, null, 2));
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/videos.json`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `token ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "Update videos.json",
+          content: content,
+          sha: await getFileSha()
+        })
       });
     }
 
-    function addVideo() {
-      const title = document.getElementById('videoTitle').value.trim();
-      const url = document.getElementById('videoUrl').value.trim();
-      if (!title || !url) {
-        alert('رجاءً املئي كل الحقول');
-        return;
-      }
-
-      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
-      videos.push({ title, url });
-      localStorage.setItem('videos_list', JSON.stringify(videos));
-      document.getElementById('videoTitle').value = '';
-      document.getElementById('videoUrl').value = '';
-      loadVideos();
-      alert('✅ تم إضافة الفيديو بنجاح!');
-    }
-
-    function deleteVideo(index) {
-      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
-      videos.splice(index, 1);
-      localStorage.setItem('videos_list', JSON.stringify(videos));
-      loadVideos();
-      alert('🗑 تم حذف الفيديو');
+    async function getFileSha() {
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/videos.json`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+      const data = await res.json();
+      return data.sha;
     }
 
     loadVideos();
   </script>
 </body>
-  </html>
+</html>
