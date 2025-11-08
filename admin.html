@@ -1,151 +1,111 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة إدارة أرضها زيد</title>
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
-      background: #f6f6f6;
-      margin: 0;
-      padding: 20px;
-      direction: rtl;
+      font-family: "Tajawal", sans-serif;
+      background: #f5f7f2;
+      color: #333;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
     }
     h1 {
+      color: #3d5a2b;
       text-align: center;
-      color: #2d572c;
     }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 700px;
-      margin: 0 auto 30px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
     }
-    input, textarea, select, button {
+    input, button {
       width: 100%;
       padding: 10px;
-      margin: 5px 0 15px;
+      margin-top: 5px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      border-radius: 6px;
       font-size: 16px;
     }
     button {
-      background: #2d572c;
+      background: #3d5a2b;
       color: white;
-      font-weight: bold;
+      border: none;
       cursor: pointer;
       transition: 0.3s;
     }
     button:hover {
-      background: #3b703a;
+      background: #527c3a;
     }
-    .product-list {
-      max-width: 700px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .video-list {
+      margin-top: 25px;
     }
-    .product-item {
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .product-item:last-child {
-      border-bottom: none;
-    }
-    .product-item span {
-      flex: 1;
+    .video-item {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>لوحة إدارة موقع أرضها زيد</h1>
+  <h1>🎥 إدارة قسم من قلب الأرض</h1>
 
-  <form id="product-form">
-    <h2>إضافة أو تعديل منتج</h2>
-    <input type="text" id="name_ar" placeholder="اسم المنتج بالعربية" required />
-    <input type="text" id="name_fr" placeholder="Nom du produit (Français)" required />
-    <input type="text" id="name_en" placeholder="Product name (English)" required />
-    <textarea id="description_ar" placeholder="الوصف بالعربية"></textarea>
-    <textarea id="description_fr" placeholder="Description (Français)"></textarea>
-    <textarea id="description_en" placeholder="Description (English)"></textarea>
-    <input type="number" id="price" placeholder="السعر بالدينار التونسي" required />
-    <input type="text" id="image" placeholder="رابط الصورة (Image URL)" />
-    <select id="category">
-      <option value="biologique">منتجات بيولوجية</option>
-      <option value="animales">منتجات حيوانية</option>
-      <option value="vegetales">منتجات نباتية</option>
-      <option value="maison">منتجات منزلية</option>
-      <option value="autres">منتجات أخرى</option>
-    </select>
-    <button type="submit">حفظ المنتج</button>
-  </form>
+  <label>عنوان الفيديو:</label>
+  <input type="text" id="videoTitle" placeholder="مثال: فلاح من القيروان يتحدث عن الزيت البيولوجي">
 
-  <div class="product-list" id="product-list">
-    <h2>قائمة المنتجات الحالية</h2>
-  </div>
+  <label>رابط الفيديو (YouTube أو Google Drive):</label>
+  <input type="text" id="videoUrl" placeholder="مثال: https://www.youtube.com/embed/...">
+
+  <button onclick="addVideo()">➕ إضافة الفيديو</button>
+
+  <div class="video-list" id="videosList"></div>
 
   <script>
-    async function loadProducts() {
-      const res = await fetch('products.json');
-      const products = await res.json();
-      const list = document.getElementById('product-list');
-      list.innerHTML = '<h2>قائمة المنتجات الحالية</h2>';
-      products.forEach((p, i) => {
-        const div = document.createElement('div');
-        div.className = 'product-item';
-        div.innerHTML = `
-          <span>${p.name_ar} - ${p.price} د.ت</span>
-          <button onclick="deleteProduct(${i})">🗑️ حذف</button>
+    function loadVideos() {
+      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
+      const list = document.getElementById('videosList');
+      list.innerHTML = '';
+      videos.forEach((v, i) => {
+        list.innerHTML += `
+          <div class="video-item">
+            <b>${v.title}</b><br>
+            <small>${v.url}</small><br>
+            <button onclick="deleteVideo(${i})" style="background:#b33">🗑 حذف</button>
+          </div>
         `;
-        list.appendChild(div);
       });
     }
 
-    async function saveProducts(products) {
-      const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'products.json';
-      a.click();
+    function addVideo() {
+      const title = document.getElementById('videoTitle').value.trim();
+      const url = document.getElementById('videoUrl').value.trim();
+      if (!title || !url) {
+        alert('رجاءً املئي كل الحقول');
+        return;
+      }
+
+      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
+      videos.push({ title, url });
+      localStorage.setItem('videos_list', JSON.stringify(videos));
+      document.getElementById('videoTitle').value = '';
+      document.getElementById('videoUrl').value = '';
+      loadVideos();
+      alert('✅ تم إضافة الفيديو بنجاح!');
     }
 
-    async function deleteProduct(index) {
-      const res = await fetch('products.json');
-      const products = await res.json();
-      products.splice(index, 1);
-      saveProducts(products);
+    function deleteVideo(index) {
+      const videos = JSON.parse(localStorage.getItem('videos_list') || '[]');
+      videos.splice(index, 1);
+      localStorage.setItem('videos_list', JSON.stringify(videos));
+      loadVideos();
+      alert('🗑 تم حذف الفيديو');
     }
 
-    document.getElementById('product-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const res = await fetch('products.json');
-      const products = await res.json();
-
-      const newProduct = {
-        name_ar: document.getElementById('name_ar').value,
-        name_fr: document.getElementById('name_fr').value,
-        name_en: document.getElementById('name_en').value,
-        description_ar: document.getElementById('description_ar').value,
-        description_fr: document.getElementById('description_fr').value,
-        description_en: document.getElementById('description_en').value,
-        price: document.getElementById('price').value,
-        image: document.getElementById('image').value,
-        category: document.getElementById('category').value
-      };
-
-      products.push(newProduct);
-      saveProducts(products);
-    });
-
-    loadProducts();
+    loadVideos();
   </script>
 </body>
-</html>
+  </html>
