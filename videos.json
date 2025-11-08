@@ -1,0 +1,19 @@
+{
+  "videos": [
+    {
+      "id": "v1",
+      "title": {
+        "ar": "قصة فلاح الزيتون - محمد",
+        "fr": "Histoire du paysan - Mohamed",
+        "en": "Farmer's story - Mohamed"
+      },
+      "description": {
+        "ar": "فلاح من سيدي بوزيد يشرح تقنيات العناية بالشجرة.",
+        "fr": "Un agriculteur de Sidi Bouzid explique les techniques.",
+        "en": "A Sidi Bouzid farmer explains the care techniques."
+      },
+      "author": "محمد - سيدي بوزيد",
+      "url": "https://drive.google.com/file/d/13cP-JCUB0yca-PR-4m8vhtNXf_JvRBGp/preview"
+    }
+  ]
+}
