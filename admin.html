@@ -1,315 +1,212 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>لوحة إدارة بسيطة — Ardha Zid</title>
-<style>
-  body{font-family:system-ui, "Cairo",sans-serif;background:#f5f5f0;padding:14px;direction:rtl}
-  .box{max-width:760px;margin:10px auto;background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-  h2{margin:0 0 8px;color:#2f5a2f}
-  label{display:block;margin-top:10px;font-weight:700}
-  input,textarea,select,button{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e1d8;margin-top:6px;font-size:15px}
-  button{background:#2f6b2f;color:#fff;border:none;padding:10px;cursor:pointer}
-  .muted{color:#666;font-size:13px;margin-top:6px}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .col{flex:1 1 48%}
-  .item{padding:8px;border-radius:8px;background:#faf8f5;margin-top:8px;display:flex;align-items:center;gap:8px}
-  .thumb{width:88px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #eee}
-  .smallbtn{padding:6px;font-size:13px;border-radius:6px}
-  .danger{background:#b33}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم - ArdhaZid</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f6f6f6;
+      margin: 0;
+      padding: 25px;
+    }
+    h1 {
+      text-align: center;
+      color: #405d27;
+    }
+    form, .list-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 800px;
+      margin: 25px auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: #405d27;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #587a3f;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .item span {
+      flex: 1;
+      margin-left: 10px;
+    }
+    .actions button {
+      margin-left: 5px;
+      background: #b33a3a;
+    }
+    .actions button.edit {
+      background: #3a7ab3;
+    }
+  </style>
 </head>
 <body>
+  <h1>📦 لوحة التحكم - ArdhaZid</h1>
 
-<div class="box">
-  <h2>لوحة إدارة بسيطة — Ardha Zid</h2>
-  <div class="muted">حفظ التغييرات يتطلب GitHub Personal Access Token بصلاحية <code>public_repo</code>. ألصقيه مؤقتاً في الحقل أدناه عند الضغط على الحفظ.</div>
+  <form id="adminForm">
+    <label>نوع المحتوى:</label>
+    <select id="type" required>
+      <option value="product">منتج</option>
+      <option value="video">فيديو</option>
+    </select>
 
-  <label>GitHub Token (ضعِه مؤقتًا قبل الحفظ)</label>
-  <input id="ghToken" type="password" placeholder="ألصقي توكن GitHub هنا (public_repo)"/>
+    <label>العنوان:</label>
+    <input type="text" id="title" required />
 
-  <hr style="margin:12px 0"/>
+    <label>الوصف:</label>
+    <textarea id="description" required></textarea>
 
-  <!-- قسم إضافة منتج -->
-  <h3>إضافة منتج جديد</h3>
-  <div class="row">
-    <div class="col">
-      <label>الاسم (العربية)</label><input id="p_name_ar" />
-      <label>الاسم (Français)</label><input id="p_name_fr" />
-      <label>الاسم (English)</label><input id="p_name_en" />
-    </div>
-    <div class="col">
-      <label>الوصف (العربية)</label><textarea id="p_desc_ar" rows="3"></textarea>
-      <label>الوصف (Français)</label><textarea id="p_desc_fr" rows="3"></textarea>
-      <label>الوصف (English)</label><textarea id="p_desc_en" rows="3"></textarea>
-    </div>
+    <label>السعر (اختياري):</label>
+    <input type="text" id="price" />
+
+    <label>رابط الصورة أو الفيديو:</label>
+    <input type="url" id="url" required />
+
+    <label>الفئة:</label>
+    <input type="text" id="category" />
+
+    <button type="submit">💾 حفظ</button>
+  </form>
+
+  <div class="list-container">
+    <h2>📋 العناصر الموجودة</h2>
+    <select id="listType">
+      <option value="products.json">المنتجات</option>
+      <option value="videos.json">الفيديوهات</option>
+    </select>
+    <button id="loadList">🔄 تحميل</button>
+    <div id="itemsList"></div>
   </div>
 
-  <div class="row">
-    <div class="col">
-      <label>الفئة</label>
-      <select id="p_category">
-        <option value="bio">منتجات بيولوجية</option>
-        <option value="plant">منتجات نباتية</option>
-        <option value="animal">منتجات حيوانية</option>
-        <option value="home">منتجات منزلية</option>
-        <option value="grains">حبوب</option>
-        <option value="normal">منتجات عادية</option>
-      </select>
-    </div>
-    <div class="col">
-      <label>السعر (د.ت)</label><input id="p_price" type="text" />
-    </div>
-  </div>
+  <script>
+    const GITHUB_TOKEN = "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";
+    const REPO_OWNER = "ardhazid-cmd";
+    const REPO_NAME = "ardhazid-website";
 
-  <label>صورة المنتج (اختر ملف)</label>
-  <input id="p_image_file" type="file" accept="image/*" />
-  <div class="muted small" id="p_img_status">لم تُحمّل صورة بعد</div>
+    const form = document.getElementById("adminForm");
+    const listType = document.getElementById("listType");
+    const itemsList = document.getElementById("itemsList");
 
-  <div style="margin-top:10px">
-    <button onclick="addProduct()">➕ إضافة محليًا</button>
-    <button onclick="saveProductsToGitHub()" style="margin-top:8px">💾 حفظ products.json ورفع الصورة</button>
-  </div>
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const type = document.getElementById("type").value;
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const price = document.getElementById("price").value;
+      const url = document.getElementById("url").value;
+      const category = document.getElementById("category").value;
 
-  <div id="productsList" class="muted" style="margin-top:12px">جارٍ تحميل المنتجات…</div>
-</div>
+      const filePath = type === "product" ? "products.json" : "videos.json";
 
-<div class="box" style="margin-top:14px">
-  <h3>إدارة الفيديوهات — من قلب الأرض</h3>
-  <label>عنوان (العربية)</label><input id="v_title_ar" />
-  <label>عنوان (Français)</label><input id="v_title_fr" />
-  <label>عنوان (English)</label><input id="v_title_en" />
-  <label>رابط الفيديو (YouTube embed أو Drive preview)</label><input id="v_url" />
-  <label>اسم الفلاح / المنطقة</label><input id="v_author" />
-  <div style="margin-top:10px">
-    <button onclick="addVideo()">➕ إضافة فيديو محليًا</button>
-    <button onclick="saveVideosToGitHub()" style="margin-top:8px">💾 حفظ videos.json</button>
-  </div>
-  <div id="videosList" class="muted" style="margin-top:12px">جارٍ تحميل الفيديوهات…</div>
-</div>
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
+      const data = await res.json();
+      const items = JSON.parse(atob(data.content));
 
-<div class="box" style="margin-top:14px">
-  <button onclick="loadAll()">↻ إعادة تحميل من المستودع</button>
-  <div class="muted" style="margin-top:8px">أدخلي التوكن فقط وقت الحفظ. بعد الحفظ يمكنك حذفه من الحقل.</div>
-</div>
+      items.push({ title, description, price, url, category, date: new Date().toISOString() });
 
-<script>
-/* إعدادات (غيري إن احتجت) */
-const REPO_OWNER = 'ardhazid-cmd';
-const REPO_NAME = 'ardhazid-website';
-const PRODUCTS_PATH = 'products.json';
-const VIDEOS_PATH = 'videos.json';
-let productsData = [];
-let videosData = { videos: [] };
+      const updated = {
+        message: "Add new " + type,
+        content: btoa(JSON.stringify(items, null, 2)),
+        sha: data.sha
+      };
 
-/* مساعدة: قراءة JSON من raw.githubusercontent */
-async function fetchJsonRaw(path){
-  try{
-    const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${path}?` + Date.now();
-    const r = await fetch(url);
-    if(!r.ok) return null;
-    return await r.json();
-  }catch(e){ console.error(e); return null; }
-}
+      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updated)
+      });
 
-/* تحميل البيانات وعرض القوائم */
-async function loadAll(){
-  const pd = await fetchJsonRaw(PRODUCTS_PATH);
-  productsData = Array.isArray(pd) ? pd : (pd && pd.products) ? pd.products : (pd || []);
-  const vd = await fetchJsonRaw(VIDEOS_PATH);
-  videosData = (vd && vd.videos) ? vd : (Array.isArray(vd) ? { videos: vd } : { videos: [] });
+      alert("✅ تمت الإضافة بنجاح");
+      form.reset();
+    });
 
-  renderProducts();
-  renderVideos();
-}
+    document.getElementById("loadList").addEventListener("click", loadItems);
 
-/* عرض المنتجات */
-function renderProducts(){
-  const el = document.getElementById('productsList');
-  if(!productsData || productsData.length===0){ el.innerHTML = '<div>لا توجد منتجات حالياً.</div>'; return; }
-  el.innerHTML = '';
-  productsData.forEach((p,i)=>{
-    const div = document.createElement('div'); div.className='item';
-    div.innerHTML = `
-      ${p.image_url ? `<img src="${p.image_url}" class="thumb">` : ''}
-      <div style="flex:1">
-        <strong>${p.name?.ar || p.name_ar || p.name || '—'}</strong>
-        <div class="muted small">${p.category || ''} — ${p.price? p.price + ' د.ت' : ''}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="smallbtn" onclick="startEdit(${i})">تعديل</button>
-        <button class="smallbtn danger" onclick="deleteProduct(${i})">حذف</button>
-      </div>
-    `;
-    el.appendChild(div);
-  });
-}
+    async function loadItems() {
+      const filePath = listType.value;
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
+      const data = await res.json();
+      const items = JSON.parse(atob(data.content));
 
-/* عرض الفيديوهات */
-function renderVideos(){
-  const el = document.getElementById('videosList');
-  if(!videosData || !videosData.videos || videosData.videos.length===0){ el.innerHTML = '<div>لا توجد فيديوهات حالياً.</div>'; return; }
-  el.innerHTML = '';
-  videosData.videos.forEach((v,i)=>{
-    const div = document.createElement('div'); div.className='item';
-    div.innerHTML = `
-      <div style="flex:1">
-        <strong>${v.title?.ar || v.title_ar || v.title || '—'}</strong>
-        <div class="muted small">${v.author || ''}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="smallbtn danger" onclick="deleteVideo(${i})">حذف</button>
-      </div>
-    `;
-    el.appendChild(div);
-  });
-}
-
-/* إضافة منتج محليًا */
-function addProduct(){
-  const item = {
-    id: 'p' + Date.now(),
-    name: { ar: document.getElementById('p_name_ar').value.trim(), fr: document.getElementById('p_name_fr').value.trim(), en: document.getElementById('p_name_en').value.trim() },
-    description: { ar: document.getElementById('p_desc_ar').value.trim(), fr: document.getElementById('p_desc_fr').value.trim(), en: document.getElementById('p_desc_en').value.trim() },
-    category: document.getElementById('p_category').value,
-    price: document.getElementById('p_price').value.trim(),
-    image_url: ''
-  };
-  productsData.push(item);
-  renderProducts();
-  alert('تمت الإضافة محليًا. اضغطي "حفظ products.json" لعمل Commit ودفع التغييرات.');
-}
-
-/* بدء تعديل: تحميل قيم المنتج للحقول وحذف العنصر القديم (نستبدله بعد الحفظ) */
-function startEdit(i){
-  const p = productsData[i];
-  document.getElementById('p_name_ar').value = p.name?.ar || '';
-  document.getElementById('p_name_fr').value = p.name?.fr || '';
-  document.getElementById('p_name_en').value = p.name?.en || '';
-  document.getElementById('p_desc_ar').value = p.description?.ar || '';
-  document.getElementById('p_desc_fr').value = p.description?.fr || '';
-  document.getElementById('p_desc_en').value = p.description?.en || '';
-  document.getElementById('p_category').value = p.category || '';
-  document.getElementById('p_price').value = p.price || '';
-  // remove old so save will re-add as new (simple flow)
-  productsData.splice(i,1);
-  renderProducts();
-}
-
-/* حذف منتج */
-function deleteProduct(i){
-  if(!confirm('هل تريدين حذف هذا المنتج؟')) return;
-  productsData.splice(i,1);
-  renderProducts();
-}
-
-/* إضافة فيديو محليًا */
-function addVideo(){
-  const item = {
-    id: 'v' + Date.now(),
-    title: { ar: document.getElementById('v_title_ar').value.trim(), fr: document.getElementById('v_title_fr').value.trim(), en: document.getElementById('v_title_en').value.trim() },
-    url: document.getElementById('v_url').value.trim(),
-    author: document.getElementById('v_author').value.trim()
-  };
-  videosData.videos.push(item);
-  renderVideos();
-  alert('تمت إضافة الفيديو محليًا. اضغطي "حفظ videos.json" لعمل Commit.');
-}
-
-/* حذف فيديو */
-function deleteVideo(i){
-  if(!confirm('هل تريدين حذف هذا الفيديو؟')) return;
-  videosData.videos.splice(i,1);
-  renderVideos();
-}
-
-/* --- رفع الصورة إلى repo/images --- */
-async function uploadImageFileToRepo(file){
-  const token = document.getElementById('ghToken').value.trim();
-  if(!token){ alert('أدخلي GitHub token في الحقل العلوي'); return null; }
-  const safeName = 'img_' + Date.now() + '_' + file.name.replace(/\s+/g,'_');
-  const path = `images/${safeName}`;
-  const b64 = await new Promise((res,rej)=>{
-    const reader = new FileReader();
-    reader.onload = ()=> res(reader.result.split(',')[1]);
-    reader.onerror = ()=> rej('فشل قراءة الملف');
-    reader.readAsDataURL(file);
-  });
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
-  const body = { message: `Upload image ${safeName} via admin`, content: b64 };
-  const resp = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
-    body: JSON.stringify(body)
-  });
-  if(!resp.ok){ const e = await resp.json(); console.error(e); alert('فشل رفع الصورة: ' + (e.message || resp.statusText)); return null; }
-  return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/images/${encodeURIComponent(safeName)}`;
-}
-
-/* --- حفظ products.json (مع رفع الصورة إن وُجدت) --- */
-async function saveProductsToGitHub(){
-  const token = document.getElementById('ghToken').value.trim();
-  if(!token) return alert('أدخلي GitHub token لحفظ التغييرات');
-
-  // إذا تم اختيار ملف صورة: ارفعه وادمجه بالمنتج الأخير الذي ليس له صورة
-  const fileInput = document.getElementById('p_image_file');
-  if(fileInput.files && fileInput.files[0]){
-    document.getElementById('p_img_status').innerText = 'جار رفع الصورة...';
-    const uploadedUrl = await uploadImageFileToRepo(fileInput.files[0]);
-    if(uploadedUrl){
-      // assign to last product without image
-      for(let i=productsData.length-1;i>=0;i--){
-        if(!productsData[i].image_url){ productsData[i].image_url = uploadedUrl; break; }
-      }
-      document.getElementById('p_img_status').innerText = 'تم رفع الصورة';
-    } else {
-      document.getElementById('p_img_status').innerText = 'فشل رفع الصورة';
+      itemsList.innerHTML = "";
+      items.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <span>${item.title}</span>
+          <div class="actions">
+            <button class="edit" onclick="editItem('${filePath}', ${index})">✏️ تعديل</button>
+            <button onclick="deleteItem('${filePath}', ${index})">🗑️ حذف</button>
+          </div>`;
+        itemsList.appendChild(div);
+      });
     }
-  }
 
-  // جهّز المحتوى
-  const contentStr = JSON.stringify(productsData, null, 2);
-  const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
+    async function deleteItem(filePath, index) {
+      if (!confirm("هل أنت متأكد من الحذف؟")) return;
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
+      const data = await res.json();
+      const items = JSON.parse(atob(data.content));
+      items.splice(index, 1);
 
-  // جلب sha إن وجد
-  const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PRODUCTS_PATH}`;
-  const g = await fetch(getUrl, { headers: { 'Authorization': 'token ' + token } });
-  let sha = null;
-  if(g.ok){ const gd = await g.json(); sha = gd.sha; }
+      const updated = {
+        message: "Delete item",
+        content: btoa(JSON.stringify(items, null, 2)),
+        sha: data.sha
+      };
 
-  // رفع (PUT)
-  const putResp = await fetch(getUrl, {
-    method: 'PUT',
-    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
-    body: JSON.stringify({ message: 'Update products.json via admin', content: contentB64, sha })
-  });
-  if(!putResp.ok){ const e = await putResp.json(); alert('فشل حفظ products.json: ' + (e.message || putResp.statusText)); console.error(e); return; }
-  alert('✅ تم حفظ products.json بنجاح.');
-}
+      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updated)
+      });
 
-/* --- حفظ videos.json --- */
-async function saveVideosToGitHub(){
-  const token = document.getElementById('ghToken').value.trim();
-  if(!token) return alert('أدخلي GitHub token لحفظ التغييرات');
-  const contentStr = JSON.stringify(videosData, null, 2);
-  const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
-  const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${VIDEOS_PATH}`;
-  const g = await fetch(getUrl, { headers: { 'Authorization': 'token ' + token } });
-  let sha = null;
-  if(g.ok){ const gd = await g.json(); sha = gd.sha; }
-  const putResp = await fetch(getUrl, {
-    method: 'PUT',
-    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
-    body: JSON.stringify({ message: 'Update videos.json via admin', content: contentB64, sha })
-  });
-  if(!putResp.ok){ const e = await putResp.json(); alert('فشل حفظ videos.json: ' + (e.message || putResp.statusText)); console.error(e); return; }
-  alert('✅ تم حفظ videos.json بنجاح.');
-}
+      alert("🗑️ تم الحذف بنجاح");
+      loadItems();
+    }
 
-/* init */
-loadAll();
-</script>
+    async function editItem(filePath, index) {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
+      const data = await res.json();
+      const items = JSON.parse(atob(data.content));
 
+      const item = items[index];
+      document.getElementById("title").value = item.title;
+      document.getElementById("description").value = item.description;
+      document.getElementById("price").value = item.price || "";
+      document.getElementById("url").value = item.url;
+      document.getElementById("category").value = item.category || "";
+
+      deleteItem(filePath, index);
+    }
+  </script>
 </body>
-  </html>
+</html>
