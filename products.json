@@ -1,0 +1,24 @@
+[
+  {
+    "name_ar": "زيت الزيتون البكر",
+    "name_fr": "Huile d'olive vierge",
+    "name_en": "Virgin Olive Oil",
+    "description_ar": "زيت طبيعي من سيدي بوزيد، معصور على البارد.",
+    "description_fr": "Huile naturelle de Sidi Bouzid, pressée à froid.",
+    "description_en": "Natural cold-pressed olive oil from Sidi Bouzid.",
+    "price": "25",
+    "image": "images/olive-oil.jpg",
+    "category": "منتجات فلاحية"
+  },
+  {
+    "name_ar": "عسل طبيعي",
+    "name_fr": "Miel naturel",
+    "name_en": "Natural Honey",
+    "description_ar": "عسل نقي من جبال سيدي بوزيد.",
+    "description_fr": "Miel pur des montagnes de Sidi Bouzid.",
+    "description_en": "Pure honey from the mountains of Sidi Bouzid.",
+    "price": "40",
+    "image": "images/honey.jpg",
+    "category": "منتجات بيتية"
+  }
+]
