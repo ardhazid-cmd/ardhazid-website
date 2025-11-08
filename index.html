@@ -389,7 +389,17 @@ function scrollToSection(id){
 /* default */
 setLang('ar');
 </script>
-</body>
+<!-- سكريبت عرض الفيديوهات -->
+<script>
+const videos = JSON.parse(localStorage.getItem('videos_list')) || [];
+const grid = document.getElementById('videosGrid');
+grid.innerHTML = videos.map(v => `
+  <div style="border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.1)">
+    <iframe width="100%" height="200" src="${v.url}" title="${v.title}" frameborder="0" allowfullscreen></iframe>
+    <p style="padding:10px;color:#333;font-weight:bold">${v.title}</p>
+  </div>
+`).join('');
+</script></body>
 </html>
 container.innerHTML
 <div id="products-container" class="products-grid"></div>
