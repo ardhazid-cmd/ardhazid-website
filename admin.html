@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Ardha Zid</title>
+<style>
+  body{font-family:"Cairo",sans-serif;background:#f6f3ee;color:#243223;padding:12px}
+  .wrap{max-width:980px;margin:10px auto}
+  h1{color:#2f4f2f}
+  .card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:12px}
+  label{display:block;margin-top:8px;font-weight:700}
+  input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e1d8;margin-top:6px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .col{flex:1 1 48%}
+  button{background:#42602f;color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:800}
+  .danger{background:#b03a2e}
+  .muted{color:#666;font-size:13px}
+  .small{font-size:13px}
+  .prod{border:1px solid #eee;padding:8px;border-radius:8px;margin-bottom:8px;background:#faf8f5}
+  .img-preview{width:120px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #e5e1d7}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .hint{font-size:13px;color:#555}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card topbar">
+    <div>
+      <h1>لوحة إدارة — Ardha Zid</h1>
+      <div class="hint">آمنة ومخفية — لإدارة المنتجات ورفع الصور مباشرةً إلى المستودع</div>
+    </div>
+    <div>
+      <div class="muted small">ليس للزوار — أحفظ الرابط سريًا</div>
+    </div>
+  </div>
+
+  <!-- login -->
+  <div id="loginCard" class="card">
+    <label>كلمة المرور</label>
+    <input id="adminPass" type="password" placeholder="أدخلي كلمة المرور"/>
+    <div class="muted small">أدخل كلمة المرور السرية للدخول</div>
+
+    <label style="margin-top:10px">GitHub Token (أدخليه للحفظ إلى repo)</label>
+    <input id="ghToken" type="password" placeholder="ألصقي GitHub Personal Access Token هنا (public_repo)"/>
+    <div class="muted small">التوكن مطلوب للحفظ في المستودع. لا تشاركيه مع أحد.</div>
+
+    <div style="margin-top:10px"><button onclick="login()">دخول</button></div>
+  </div>
+
+  <!-- admin area -->
+  <div id="adminArea" style="display:none">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>أنت الآن داخل لوحة التحكم</strong>
+          <div class="muted small">أضيفي/حرّري/احذفي منتجات وارفعي صوراً — التغييرات تحفظ إلى <code>products.json</code> ومجلد <code>images/</code>.</div>
+        </div>
+        <div>
+          <button onclick="logout()" class="danger">خروج</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- add product -->
+    <div class="card">
+      <h3>أضف منتجًا جديدًا</h3>
+      <label>الفئة</label>
+      <select id="inpCategory">
+        <option value="plant">منتجات نباتية</option>
+        <option value="animal">منتجات حيوانية</option>
+        <option value="bio">منتجات بيولوجية</option>
+        <option value="home">منتجات بيتية</option>
+        <option value="grains">حبوب</option>
+        <option value="normal">منتجات عادية</option>
+      </select>
+
+      <div class="row" style="margin-top:8px">
+        <div class="col">
+          <label>الاسم (العربية)</label><input id="inpNameAr" placeholder="مثال: زيتون عضوي"/>
+          <label>الوصف (العربية)</label><textarea id="inpDescAr"></textarea>
+        </div>
+        <div class="col">
+          <label>الاسم (Français)</label><input id="inpNameFr" placeholder="Ex: Olives bio"/>
+          <label>الوصف (Français)</label><textarea id="inpDescFr"></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <label>الاسم (English)</label><input id="inpNameEn" placeholder="Ex: Organic olives"/>
+        <label>الوصف (English)</label><textarea id="inpDescEn"></textarea>
+        <label>السعر (أرقام فقط)</label><input id="inpPrice" placeholder="مثلاً: 25"/>
+        <label>صورة المنتج (اختر ملف من هاتفك)</label>
+        <input id="inpImageFile" type="file" accept="image/*"/>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <img id="preview" class="img-preview" src="" alt="preview" style="display:none"/>
+          <div id="imgStatus" class="muted small">لم تُحمّل صورة بعد</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <button onclick="handleAdd()">أضف المنتج ورفعه</button>
+      </div>
+    </div>
+
+    <!-- products list -->
+    <div id="productsList" class="card">
+      <h3>قائمة المنتجات</h3>
+      <div id="listContainer" class="muted small">جارٍ تحميل المنتجات…</div>
+    </div>
+
+    <div style="margin-top:10px" class="card">
+      <strong>حفظ التغييرات</strong>
+      <div class="muted small">عند الضغط على "حفظ إلى GitHub" سيُجرى commit لملف <code>products.json</code>. تأكدي من إدخال GitHub Token أعلاه.</div>
+      <div style="margin-top:10px"><button onclick="saveToGitHub()">حفظ إلى GitHub</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* الإعدادات */
+const ADMIN_PASS = 'ardha2025';
+const REPO_OWNER = 'ardhazid-cmd';
+const REPO_NAME = 'ardhazid-website';
+const DATA_PATH = 'products.json';
+
+let ghToken = '';
+let productsData = { products: [] };
+
+/* --- تسجيل دخول --- */
+function login(){
+  const p = document.getElementById('adminPass').value.trim();
+  if(p !== ADMIN_PASS){ alert('كلمة المرور غير صحيحة'); return; }
+  ghToken = document.getElementById('ghToken').value.trim();
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('adminArea').style.display = 'block';
+  loadProducts();
+}
+
+/* خروج */
+function logout(){
+  ghToken = '';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('adminArea').style.display = 'none';
+}
+
+/* تحميل products.json من المستودع */
+async function loadProducts(){
+  const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_PATH}`;
+  try{
+    const resp = await fetch(rawUrl);
+    if(!resp.ok) throw new Error('لم أتمكن من تحميل بيانات المنتجات');
+    productsData = await resp.json();
+  }catch(e){
+    productsData = { products: [] };
+  }
+  renderProductsList();
+}
+
+/* عرض القائمة */
+function renderProductsList(){
+  const container = document.getElementById('listContainer');
+  container.innerHTML = '';
+  if(!productsData.products || productsData.products.length===0){ container.innerHTML = '<div>لا توجد منتجات حالياً.</div>'; return; }
+  productsData.products.forEach((p, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'prod';
+    div.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center">
+        <img src="${p.image_url||''}" class="img-preview" onerror="this.style.display='none'"/>
+        <div style="flex:1">
+          <strong>${p.name.ar || '—'}</strong>
+          <div class="muted small">${p.category} — ${p.price? p.price + ' د.ت' : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="editProduct(${idx})">تعديل</button>
+          <button onclick="deleteProduct(${idx})" class="danger">حذف</button>
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+/* --- رفع الصورة إلى GitHub (مجلد images/) --- */
+async function uploadImageFile(file){
+  if(!ghToken) { alert('ادخلي GitHub Token لحفظ الصورة في المستودع'); return null; }
+  // اسم فريد للصورة
+  const safeName = 'img_' + Date.now() + '_' + file.name.replace(/\s+/g,'_');
+  const path = `images/${safeName}`;
+  // قراءة الملف كبايناري وتحويل إلى base64
+  const b64 = await new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> {
+      const dataUrl = reader.result;
+      // dataUrl = "data:<mime>;base64,...."
+      const base64 = dataUrl.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = ()=> reject('فشل قراءة الصورة');
+    reader.readAsDataURL(file);
+  });
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+  // بناء جسم الطلب
+  const body = {
+    message: `Upload image ${safeName} via admin panel`,
+    content: b64
+  };
+  const resp = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + ghToken,
+      'Accept': 'application/vnd.github.v3+json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!resp.ok){
+    const err = await resp.json();
+    console.error(err);
+    alert('فشل رفع الصورة: ' + (err.message || resp.statusText));
+    return null;
+  }
+  // بعد النجاح: عنوان الصورة على raw.githubusercontent
+  const imageUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/images/${encodeURIComponent(safeName)}`;
+  return imageUrl;
+}
+
+/* إضافة منتج: يرفع الصورة أولاً إن وُجدت ثم يخزن محليًا ويطلب الحفظ */
+async function handleAdd(){
+  const nameAr = document.getElementById('inpNameAr').value.trim();
+  if(!nameAr){ alert('ادخلي اسم المنتج بالعربية'); return; }
+  const item = {
+    id: 'p' + Date.now(),
+    category: document.getElementById('inpCategory').value,
+    price: document.getElementById('inpPrice').value.trim(),
+    image_url: '',
+    name: {
+      ar: nameAr,
+      fr: document.getElementById('inpNameFr').value.trim(),
+      en: document.getElementById('inpNameEn').value.trim()
+    },
+    description: {
+      ar: document.getElementById('inpDescAr').value.trim(),
+      fr: document.getElementById('inpDescFr').value.trim(),
+      en: document.getElementById('inpDescEn').value.trim()
+    }
+  };
+
+  // إذا اخترتِ ملف صورة: ارفعيه أولًا
+  const fileInput = document.getElementById('inpImageFile');
+  if(fileInput.files && fileInput.files[0]){
+    document.getElementById('imgStatus').innerText = 'جار رفع الصورة...';
+    const uploadedUrl = await uploadImageFile(fileInput.files[0]);
+    if(!uploadedUrl) { document.getElementById('imgStatus').innerText = 'فشل رفع الصورة'; return; }
+    item.image_url = uploadedUrl;
+    document.getElementById('imgStatus').innerText = 'تم رفع الصورة';
+  }
+
+  productsData.products.push(item);
+  renderProductsList();
+  alert('تمت إضافة المنتج محلياً. اضغطي "حفظ إلى GitHub" لحفظه نهائياً.');
+}
+
+/* تعديل */
+function editProduct(idx){
+  const p = productsData.products[idx];
+  const nameAr = prompt('الاسم (العربية):', p.name.ar || '');
+  if(nameAr===null) return;
+  p.name.ar = nameAr;
+  p.name.fr = prompt('الاسم (Français):', p.name.fr || '') || '';
+  p.name.en = prompt('الاسم (English):', p.name.en || '') || '';
+  p.description.ar = prompt('الوصف (العربية):', p.description.ar || '') || '';
+  p.description.fr = prompt('الوصف (Français):', p.description.fr || '') || '';
+  p.description.en = prompt('الوصف (English):', p.description.en || '') || '';
+  p.price = prompt('السعر (أرقام فقط):', p.price || '') || '';
+  p.image_url = prompt('رابط الصورة (URL):', p.image_url || '') || '';
+  renderProductsList();
+}
+
+/* حذف */
+function deleteProduct(idx){
+  if(!confirm('هل تريدين حذف هذا المنتج؟')) return;
+  productsData.products.splice(idx,1);
+  renderProductsList();
+}
+
+/* حفظ products.json إلى GitHub */
+async function saveToGitHub(){
+  if(!ghToken){ alert('ادخلي GitHub Token في الخانة أعلاه حتى أتمكن من الحفظ'); return; }
+  const apiBase = 'https://api.github.com';
+  const owner = REPO_OWNER;
+  const repo = REPO_NAME;
+  const path = DATA_PATH;
+  const url = `${apiBase}/repos/${owner}/${repo}/contents/${path}`;
+
+  try{
+    // احصل على sha الحالي إن وجد
+    const getResp = await fetch(url);
+    let sha = null;
+    if(getResp.ok){
+      const getData = await getResp.json();
+      sha = getData.sha;
+    }
+    const contentStr = JSON.stringify(productsData, null, 2);
+    const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
+    const body = { message: 'Update products.json via admin panel', content: contentB64 };
+    if(sha) body.sha = sha;
+
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+    if(!resp.ok){
+      const err = await resp.json();
+      alert('فشل الحفظ: ' + (err.message || resp.statusText));
+      console.error(err);
+      return;
+    }
+    alert('تم الحفظ في المستودع بنجاح.');
+  }catch(e){
+    console.error(e);
+    alert('حدث خطأ أثناء الحفظ: ' + e.message);
+  }
+}
+</script>
+</body>
+  </html>
