@@ -3,236 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم - ArdhaZid</title>
+  <title>لوحة التحكم - أرضها زيد</title>
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
-      background: #f6f6f6;
+      font-family: "Cairo", sans-serif;
+      background-color: #f5f5f0;
       margin: 0;
-      padding: 25px;
+      padding: 20px;
+      color: #333;
     }
     h1 {
+      color: #425d2f;
       text-align: center;
-      color: #405d27;
+      margin-bottom: 30px;
     }
-    form, .list-container {
-      background: #fff;
-      border-radius: 12px;
+    form {
+      background: white;
       padding: 20px;
-      max-width: 800px;
-      margin: 25px auto;
+      border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
     }
     input, textarea, select {
       width: 100%;
       padding: 10px;
-      margin-bottom: 12px;
+      margin-top: 6px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      font-size: 14px;
     }
     button {
-      background: #405d27;
+      background-color: #425d2f;
       color: white;
       border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 10px 18px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      margin-top: 15px;
     }
     button:hover {
-      background: #587a3f;
-    }
-    .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-    }
-    .item span {
-      flex: 1;
-      margin-left: 10px;
-    }
-    .actions button {
-      margin-left: 5px;
-      background: #b33a3a;
-    }
-    .actions button.edit {
-      background: #3a7ab3;
+      background-color: #5c7b40;
     }
   </style>
 </head>
 <body>
-  <h1>📦 لوحة التحكم - ArdhaZid</h1>
 
-  <form id="adminForm">
-    <label>نوع المحتوى:</label>
-    <select id="type" required>
-      <option value="product">منتج</option>
-      <option value="video">فيديو</option>
+  <h1>لوحة التحكم - أرضها زيد 🌿</h1>
+
+  <form id="productForm">
+    <h3>➕ إضافة منتج</h3>
+    <label>اسم المنتج بالعربية:</label>
+    <input type="text" id="name_ar" required>
+    <label>اسم المنتج بالفرنسية:</label>
+    <input type="text" id="name_fr" required>
+    <label>اسم المنتج بالإنجليزية:</label>
+    <input type="text" id="name_en" required>
+
+    <label>الوصف بالعربية:</label>
+    <textarea id="desc_ar" required></textarea>
+    <label>الوصف بالفرنسية:</label>
+    <textarea id="desc_fr" required></textarea>
+    <label>الوصف بالإنجليزية:</label>
+    <textarea id="desc_en" required></textarea>
+
+    <label>السعر:</label>
+    <input type="text" id="price" required>
+
+    <label>رابط الصورة (Image URL):</label>
+    <input type="text" id="image">
+
+    <label>التصنيف:</label>
+    <select id="category">
+      <option value="bio">منتجات بيولوجية</option>
+      <option value="vegetal">منتجات نباتية</option>
+      <option value="animal">منتجات حيوانية</option>
+      <option value="maison">منتجات منزلية</option>
+      <option value="autre">أخرى</option>
     </select>
 
-    <label>العنوان:</label>
-    <input type="text" id="title" required />
-
-    <label>الوصف:</label>
-    <textarea id="description" required></textarea>
-
-    <label>السعر (اختياري):</label>
-    <input type="text" id="price" />
-<label>صورة المنتج أو الفيديو:</label>
-<input type="file" id="fileInput" accept="image/*,video/*" />
-
-    <label>الفئة:</label>
-    <input type="text" id="category" />
-
-    <button type="submit">💾 حفظ</button>
+    <button type="button" onclick="addProduct()">إضافة المنتج</button>
   </form>
 
-  <div class="list-container">
-    <h2>📋 العناصر الموجودة</h2>
-    <select id="listType">
-      <option value="products.json">المنتجات</option>
-      <option value="videos.json">الفيديوهات</option>
-    </select>
-    <button id="loadList">🔄 تحميل</button>
-    <div id="itemsList"></div>
-  </div>
+  <form id="videoForm">
+    <h3>🎥 إضافة فيديو</h3>
+    <label>عنوان الفيديو:</label>
+    <input type="text" id="videoTitle" required>
+    <label>رابط الفيديو (YouTube Embed URL):</label>
+    <input type="text" id="videoURL" required>
+    <button type="button" onclick="addVideo()">إضافة الفيديو</button>
+  </form>
 
   <script>
-    const GITHUB_TOKEN = "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";
-    const REPO_OWNER = "ardhazid-cmd";
-    const REPO_NAME = "ardhazid-website";
-
-    const form = document.getElementById("adminForm");
-    const listType = document.getElementById("listType");
-    const itemsList = document.getElementById("itemsList");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const type = document.getElementById("type").value;
-      const title = document.getElementById("title").value;
-      const description = document.getElementById("description").value;
-      const price = document.getElementById("price").value;
-      const fileInput = document.getElementById("fileInput");
-let url = "";
-
-if (fileInput.files.length > 0) {
-  const file = fileInput.files[0];
-  const fileName = file.name.replace(/\s+/g, "_");
-  const reader = new FileReader();
-  await new Promise(resolve => {
-    reader.onload = async () => {
-      const base64Data = reader.result.split(",")[1];
-      const upload = {
-        message: "Upload media file",
-        content: base64Data
-      };
-      const resUpload = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/uploads/${fileName}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(upload)
-      });
-      const uploadData = await resUpload.json();
-      url = uploadData.content.download_url || `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/uploads/${fileName}`;
-      resolve();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-      const category = document.getElementById("category").value;
-
-      const filePath = type === "product" ? "products.json" : "videos.json";
-
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
-      const data = await res.json();
-      const items = JSON.parse(atob(data.content));
-
-      items.push({ title, description, price, url, category, date: new Date().toISOString() });
-
-      const updated = {
-        message: "Add new " + type,
-        content: btoa(JSON.stringify(items, null, 2)),
-        sha: data.sha
-      };
-
-      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updated)
-      });
-
-      alert("✅ تمت الإضافة بنجاح");
-      form.reset();
-    });
-
-    document.getElementById("loadList").addEventListener("click", loadItems);
-
-    async function loadItems() {
-      const filePath = listType.value;
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
-      const data = await res.json();
-      const items = JSON.parse(atob(data.content));
-
-      itemsList.innerHTML = "";
-      items.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <span>${item.title}</span>
-          <div class="actions">
-            <button class="edit" onclick="editItem('${filePath}', ${index})">✏️ تعديل</button>
-            <button onclick="deleteItem('${filePath}', ${index})">🗑️ حذف</button>
-          </div>`;
-        itemsList.appendChild(div);
-      });
+    async function addProduct() {
+      alert("تمت إضافة المنتج مؤقتًا في المتصفح (النشر المباشر على GitHub سيتفعل لاحقًا)");
     }
 
-    async function deleteItem(filePath, index) {
-      if (!confirm("هل أنت متأكد من الحذف؟")) return;
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
-      const data = await res.json();
-      const items = JSON.parse(atob(data.content));
-      items.splice(index, 1);
-
-      const updated = {
-        message: "Delete item",
-        content: btoa(JSON.stringify(items, null, 2)),
-        sha: data.sha
-      };
-
-      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updated)
-      });
-
-      alert("🗑️ تم الحذف بنجاح");
-      loadItems();
-    }
-
-    async function editItem(filePath, index) {
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`);
-      const data = await res.json();
-      const items = JSON.parse(atob(data.content));
-
-      const item = items[index];
-      document.getElementById("title").value = item.title;
-      document.getElementById("description").value = item.description;
-      document.getElementById("price").value = item.price || "";
-      document.getElementById("url").value = item.url;
-      document.getElementById("category").value = item.category || "";
-
-      deleteItem(filePath, index);
+    async function addVideo() {
+      alert("تمت إضافة الفيديو مؤقتًا في المتصفح (النشر المباشر على GitHub سيتفعل لاحقًا)");
     }
   </script>
 </body>
