@@ -80,9 +80,8 @@
 
     <label>السعر (اختياري):</label>
     <input type="text" id="price" />
-
-    <label>رابط الصورة أو الفيديو:</label>
-    <input type="url" id="url" required />
+<label>صورة المنتج أو الفيديو:</label>
+<input type="file" id="fileInput" accept="image/*,video/*" />
 
     <label>الفئة:</label>
     <input type="text" id="category" />
@@ -115,7 +114,35 @@
       const title = document.getElementById("title").value;
       const description = document.getElementById("description").value;
       const price = document.getElementById("price").value;
-      const url = document.getElementById("url").value;
+      const fileInput = document.getElementById("fileInput");
+let url = "";
+
+if (fileInput.files.length > 0) {
+  const file = fileInput.files[0];
+  const fileName = file.name.replace(/\s+/g, "_");
+  const reader = new FileReader();
+  await new Promise(resolve => {
+    reader.onload = async () => {
+      const base64Data = reader.result.split(",")[1];
+      const upload = {
+        message: "Upload media file",
+        content: base64Data
+      };
+      const resUpload = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/uploads/${fileName}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(upload)
+      });
+      const uploadData = await resUpload.json();
+      url = uploadData.content.download_url || `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/uploads/${fileName}`;
+      resolve();
+    };
+    reader.readAsDataURL(file);
+  });
+}
       const category = document.getElementById("category").value;
 
       const filePath = type === "product" ? "products.json" : "videos.json";
