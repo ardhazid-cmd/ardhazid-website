@@ -108,5 +108,76 @@
       alert("تمت إضافة الفيديو مؤقتًا في المتصفح (النشر المباشر على GitHub سيتفعل لاحقًا)");
     }
   </script>
+<script>
+  const GITHUB_TOKEN = "ضع التوكن القديم هنا بين علامتي التنصيص";
+  const REPO_OWNER = "ضع اسم المستخدم في GitHub هنا";
+  const REPO_NAME = "ضع اسم المستودع هنا (نفس اللي فيه الموقع)";
+  const PRODUCTS_FILE = "products.json";
+  const VIDEOS_FILE = "videos.json";
+
+  // 🟢 تحميل محتوى ملف JSON من GitHub
+  async function fetchFileContent(filePath) {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
+      headers: { Authorization: `token ${GITHUB_TOKEN}` }
+    });
+    const data = await res.json();
+    const content = atob(data.content);
+    return { sha: data.sha, json: JSON.parse(content) };
+  }
+
+  // 🟢 حفظ التحديثات في GitHub
+  async function updateFile(filePath, newData, sha, message) {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 2)))),
+        sha
+      })
+    });
+    return await res.json();
+  }
+
+  // 🟢 إضافة منتج جديد
+  async function addProduct() {
+    const name_ar = document.getElementById("name_ar").value;
+    const name_fr = document.getElementById("name_fr").value;
+    const name_en = document.getElementById("name_en").value;
+    const desc_ar = document.getElementById("desc_ar").value;
+    const desc_fr = document.getElementById("desc_fr").value;
+    const desc_en = document.getElementById("desc_en").value;
+    const price = document.getElementById("price").value;
+    const image = document.getElementById("image").value;
+    const category = document.getElementById("category").value;
+
+    const { sha, json } = await fetchFileContent(PRODUCTS_FILE);
+
+    json.push({
+      name_ar, name_fr, name_en,
+      desc_ar, desc_fr, desc_en,
+      price, image, category
+    });
+
+    await updateFile(PRODUCTS_FILE, json, sha, "إضافة منتج جديد");
+    alert("✅ تمت إضافة المنتج بنجاح إلى GitHub!");
+  }
+
+  // 🟢 إضافة فيديو جديد
+  async function addVideo() {
+    const title = document.getElementById("videoTitle").value;
+    const url = document.getElementById("videoURL").value;
+
+    const { sha, json } = await fetchFileContent(VIDEOS_FILE);
+
+    json.push({ title, url });
+
+    await updateFile(VIDEOS_FILE, json, sha, "إضافة فيديو جديد");
+    alert("✅ تمت إضافة الفيديو بنجاح إلى GitHub!");
+  }
+        </script>
 </body>
 </html>
