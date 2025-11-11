@@ -427,4 +427,25 @@ container.innerHTML
   }
   loadVideosToPage();
 </script>
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB8yPjL3raWerMS6iblP2GSSm8em-IsLWA",
+  authDomain: "ardha-zid.firebaseapp.com",
+  projectId: "ardha-zid",
+  storageBucket: "ardha-zid.firebasestorage.app",
+  messagingSenderId: "475311363155",
+  appId: "1:475311363155:web:bd1eae10a3db4e7820e2a6",
+  measurementId: "G-YTNS3YFC9N"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 </body></html>
